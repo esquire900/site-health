@@ -330,7 +330,8 @@ tags
 pyvenv.cfg
 pip-selfcheck.json
 .env
-
+live.env
+deploy.php
 
 ### Project template
 

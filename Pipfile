@@ -32,6 +32,7 @@ Sphinx = "==3.0.4"
 pyopenssl = "*"
 selenium = "*"
 tld = "*"
+sentry-sdk = "*"
 
 [requires]
 python_version = "3.7"
