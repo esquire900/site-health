@@ -26,7 +26,7 @@ class Site(models.Model):
 
 class Page(models.Model):
     url_part = models.CharField(max_length=1024)
-    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    site = models.ForeignKey("Site", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.url

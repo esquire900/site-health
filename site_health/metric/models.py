@@ -1,6 +1,9 @@
-from metric.tasks import *
-from metric.utils import *
-from scraper.models import *
+import requests
+from django.db import models
+from django.utils import timezone
+
+from metric.utils import dt_str_to_sec_diff_now
+from scraper.models import BaseScraper, SSLCertScraper, HeadersScraper, GetScraper
 from website.models import Page
 
 

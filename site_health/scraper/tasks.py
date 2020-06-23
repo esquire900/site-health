@@ -51,11 +51,12 @@ class SeleniumScraperTask(Task):
     def driver(self):
         if self._driver is None:
             from selenium import webdriver
+
             self._driver = webdriver.Remote(
                 desired_capabilities=webdriver.DesiredCapabilities.FIREFOX,
-                command_executor='http://localhost:4444/wd/hub'
+                command_executor="http://localhost:4444/wd/hub",
             )
-            self._driver.desired_capabilities['zal:recordVideo'] = False
+            self._driver.desired_capabilities["zal:recordVideo"] = False
         return self._driver
 
     @property
@@ -71,7 +72,7 @@ def selenium_scraper_execute(scrape_id):
     try:
         scraper.get_data()
     except WebDriverException as e:
-        if 'was terminated due to ORPHAN' in e.msg:
+        if "was terminated due to ORPHAN" in e.msg:
             # driver became stale, reinit
             _driver = None
             emptied = selenium_scraper_execute.empty_driver
