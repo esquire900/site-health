@@ -33,6 +33,7 @@ pyopenssl = "*"
 selenium = "*"
 tld = "*"
 sentry-sdk = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
