@@ -34,6 +34,7 @@ selenium = "*"
 tld = "*"
 sentry-sdk = "*"
 pandas = "*"
+django-anymail = {extras = ["mailgrid"],version = "*"}
 
 [requires]
 python_version = "3.7"

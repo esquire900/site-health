@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4535849d6887e65f64fd65be1667985c03709e68a06693c1b42f1f6177b3e8d8"
+            "sha256": "47d9db344d15a110dc7877ee6c9c9ffb589df1614d66bc26e609079183e41132"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -228,6 +228,17 @@
             ],
             "index": "pypi",
             "version": "==0.41.0"
+        },
+        "django-anymail": {
+            "extras": [
+                "mailgrid"
+            ],
+            "hashes": [
+                "sha256:7af1076f383fb3b62b301949ea8f7d87a41376015309ffc35a246a1726060429",
+                "sha256:a2bd7a40aa91a1033892630652d3ca8148de70fa2927eb4eebde239fe705f0f4"
+            ],
+            "index": "pypi",
+            "version": "==7.1.0"
         },
         "django-celery-beat": {
             "hashes": [
