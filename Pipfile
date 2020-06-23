@@ -12,7 +12,7 @@ argon2-cffi = "==19.2.0"
 whitenoise = "==5.0.1"
 redis = "==3.5.0"
 hiredis = "==1.0.1"
-celery = "==4.4.2"
+celery = {extras = ["redis"],version = "*"}
 django-celery-beat = "==2.0.0"
 django-environ = "==0.4.5"
 django-model-utils = "==4.0.0"
@@ -30,6 +30,8 @@ django-coverage-plugin = "==1.8.0"
 Werkzeug = "==1.0.1"
 Sphinx = "==3.0.4"
 pyopenssl = "*"
+selenium = "*"
+tld = "*"
 
 [requires]
 python_version = "3.7"
