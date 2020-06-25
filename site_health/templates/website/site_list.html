@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% block title %}User: {{ object.username }}{% endblock %}
+
+{% block content %}
+  <table>
+    {% for site in sites %}
+      <tr>
+        <td>
+          <a href="{% url 'websites:detail' site.id %}">
+            {{ site.domain }}
+          </a>
+        </td>
+        <td>
+          {{ site.url }}
+        </td>
+        <td>
+          {{ site.page_set.count }}
+        </td>
+        <td>
+          <form action="{% url 'websites:start_indexing' site.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" value="{{ site.id }}" name="site_id">
+            <input type="submit" name="start_indexing" id="" value="start indexing">
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock content %}

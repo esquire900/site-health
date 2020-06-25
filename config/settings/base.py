@@ -68,6 +68,7 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_celery_results",
 ]
 
 LOCAL_APPS = [
@@ -149,7 +150,6 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-STATIC_CACHE = STATIC_URL + "CACHE/"
 
 # MEDIA
 # ------------------------------------------------------------------------------
@@ -157,6 +157,7 @@ STATIC_CACHE = STATIC_URL + "CACHE/"
 MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
+SCRAPER_CACHE = MEDIA_ROOT + "/cache/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -277,6 +278,8 @@ CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 60
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#beat-scheduler
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_CACHE_BACKEND = "default"
 # django-allauth
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)

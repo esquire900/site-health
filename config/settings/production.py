@@ -5,7 +5,6 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
 
-env.read_env(str(ROOT_DIR / ".env"))
 
 from .base import *  # noqa
 from .base import env

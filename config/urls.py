@@ -17,6 +17,7 @@ urlpatterns = [
     path("users/", include("site_health.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path("websites/", include("site_health.website.urls", namespace="websites")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS

@@ -1,6 +1,5 @@
 import requests
 from django.db import models
-from django.utils import timezone
 
 from metric.utils import dt_str_to_sec_diff_now
 from scraper.models import BaseScraper, SSLCertScraper, HeadersScraper, GetScraper
@@ -17,7 +16,7 @@ class MetricRequirements:
 class Metric(models.Model):
     time = models.DateTimeField()
     page = models.ForeignKey(Page, on_delete=models.CASCADE)
-    scraper_data = None
+    scraper = None
 
     class Requirements(MetricRequirements):
         pass
@@ -29,38 +28,12 @@ class Metric(models.Model):
     def generate(self):
         pass
 
-    def get_data(self):
-        return self.scraper_data
-
-    def run(self):
-        if self.Requirements.required_scraper is None:
-            raise Exception("nothing to do here")
-        scraper = self.Requirements.required_scraper
-
-        ## see if there already exists a scrape that satisfies the requirement
-        existing = (
-            scraper.objects.filter(
-                page=self.page,
-                scraped_at__gt=timezone.now()
-                - timezone.timedelta(seconds=self.Requirements.max_age),
-            )
-            .order_by("-scraped_at")
-            .all()
-        )
-        if len(existing) == 0:
-            scraper = scraper().factory(self.page)
-        else:
-            scraper = existing[0]
-        self.scraper_data = scraper.get_data()
-
+    def run(self, page: Page, scraper: BaseScraper):
+        self.scraper = scraper
+        self.page = page
         self.time = scraper.scraped_at
         self.generate()
         self.save()
-
-    def factory(self, page: Page):
-        inst = self.__class__()
-        inst.page = page
-        return inst
 
 
 class SSLExpiration(Metric):
@@ -68,14 +41,12 @@ class SSLExpiration(Metric):
     seconds_till_activation = models.IntegerField()
 
     class Requirements(MetricRequirements):
-        once_per_domain = True
         required_scraper = SSLCertScraper
-        max_age = 60 * 60
 
     def generate(self):
         import OpenSSL
 
-        cert = self.get_data()
+        cert = self.scraper.get_data()
         x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
 
         self.seconds_till_expiration = dt_str_to_sec_diff_now(x509.get_notAfter())
@@ -86,16 +57,15 @@ class HeaderMetrics(Metric):
     status_code = models.SmallIntegerField()
     content_length = models.IntegerField(null=True)
     sec_since_last_modified = models.IntegerField(null=True)
+    elapsed_seconds = models.FloatField()
 
     class Requirements(MetricRequirements):
-        once_per_domain = False
         required_scraper = HeadersScraper
-        max_age = 10
 
     def generate(self):
-        r = self.get_data()  # type: requests.models.Response
+        r = self.scraper.get_data()  # type: requests.models.Response
         self.status_code = r.status_code
-
+        self.elapsed_seconds = r.elapsed.total_seconds()
         if "Content-Length" in r.headers.keys():
             self.content_length = r.headers["Content-Length"]
         if "Last-Modified" in r.headers.keys():
@@ -109,12 +79,13 @@ class RedirectMetrics(Metric):
     redirect_is_permanent = models.BooleanField(null=True)
 
     class Requirements(MetricRequirements):
-        once_per_domain = False
         required_scraper = GetScraper
-        max_age = 60 * 10
 
     def generate(self):
-        r = self.get_data()  # type: requests.models.Response
+        r = self.scraper.get_data()  # type: requests.models.Response
         self.num_redirects = len(r.history)
         if len(r.history) > 0:
             self.redirect_is_permanent = r.history[0].is_permanent_redirect
+
+
+all_metrics = [HeaderMetrics, RedirectMetrics, SSLExpiration]
