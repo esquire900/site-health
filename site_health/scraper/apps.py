@@ -2,4 +2,7 @@ from django.apps import AppConfig
 
 
 class ScraperConfig(AppConfig):
-    name = "scraper"
+    name = "site_health.scraper"
+
+    def ready(self):
+        import site_health.scraper.signals  # noqa

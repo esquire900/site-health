@@ -1,9 +1,11 @@
 import requests
 from django.db import models
 
-from metric.utils import dt_str_to_sec_diff_now
-from scraper.models import BaseScraper, SSLCertScraper, HeadersScraper, GetScraper
-from website.models import Page
+from site_health.metric.utils import date_string_to_total_seconds
+from site_health.scraper.models import BaseScraper
+from site_health.scraper.models import PageScraper
+from site_health.scraper.models import SSLCertScraper
+from site_health.website.models import Page
 
 
 class MetricRequirements:
@@ -46,46 +48,35 @@ class SSLExpiration(Metric):
     def generate(self):
         import OpenSSL
 
-        cert = self.scraper.get_data()
+        cert = self.scraper.run()
         x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
 
-        self.seconds_till_expiration = dt_str_to_sec_diff_now(x509.get_notAfter())
-        self.seconds_till_activation = dt_str_to_sec_diff_now(x509.get_notBefore())
+        self.seconds_till_expiration = date_string_to_total_seconds(x509.get_notAfter())
+        self.seconds_till_activation = date_string_to_total_seconds(
+            x509.get_notBefore()
+        )
 
 
-class HeaderMetrics(Metric):
+class PageRequestMetrics(Metric):
     status_code = models.SmallIntegerField()
     content_length = models.IntegerField(null=True)
     sec_since_last_modified = models.IntegerField(null=True)
     elapsed_seconds = models.FloatField()
-
-    class Requirements(MetricRequirements):
-        required_scraper = HeadersScraper
-
-    def generate(self):
-        r = self.scraper.get_data()  # type: requests.models.Response
-        self.status_code = r.status_code
-        self.elapsed_seconds = r.elapsed.total_seconds()
-        if "Content-Length" in r.headers.keys():
-            self.content_length = r.headers["Content-Length"]
-        if "Last-Modified" in r.headers.keys():
-            self.sec_since_last_modified = dt_str_to_sec_diff_now(
-                r.headers["Last-Modified"]
-            )
-
-
-class RedirectMetrics(Metric):
     num_redirects = models.SmallIntegerField()
     redirect_is_permanent = models.BooleanField(null=True)
 
     class Requirements(MetricRequirements):
-        required_scraper = GetScraper
+        required_scraper = PageScraper
 
     def generate(self):
-        r = self.scraper.get_data()  # type: requests.models.Response
+        r = self.scraper.run()  # type: requests.models.Response
+        self.status_code = r.status_code
+        self.elapsed_seconds = r.elapsed.total_seconds()
+        self.content_length = len(r.content)
+        if "Last-Modified" in r.headers.keys():
+            self.sec_since_last_modified = -date_string_to_total_seconds(
+                r.headers["Last-Modified"]
+            )
         self.num_redirects = len(r.history)
         if len(r.history) > 0:
             self.redirect_is_permanent = r.history[0].is_permanent_redirect
-
-
-all_metrics = [HeaderMetrics, RedirectMetrics, SSLExpiration]

@@ -3,9 +3,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView, FormView, CreateView
 
-from website.models import Site
+from site_health.website.models import Site
 
-from website.forms import WebsiteStartIndexingForm
+from site_health.website.forms import WebsiteStartIndexingForm
 from django.core.exceptions import ValidationError
 
 
