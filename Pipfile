@@ -39,6 +39,7 @@ django-lifecycle = "*"
 django-celery-results = "*"
 markdown = "*"
 django-filter = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.7"
