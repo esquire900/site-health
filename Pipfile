@@ -37,6 +37,8 @@ pandas = "*"
 django-anymail = {extras = ["mailgrid"],version = "*"}
 django-lifecycle = "*"
 django-celery-results = "*"
+markdown = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"

@@ -43,7 +43,7 @@ class Site(LifecycleModelMixin, models.Model):
 
 class Page(LifecycleModelMixin, models.Model):
     url_part = models.CharField(max_length=1024)
-    site = models.ForeignKey("Site", on_delete=models.CASCADE)
+    site = models.ForeignKey("Site", on_delete=models.CASCADE, related_name="pages")
     is_home = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
